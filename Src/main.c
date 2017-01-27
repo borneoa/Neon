@@ -77,23 +77,51 @@ int main(void)
   /* Configure the system clock to 100 MHz */
   SystemClock_Config();
   
-  /*##-1- Enable GPIOA Clock (to be able to program the configuration registers) */
-  __HAL_RCC_GPIOA_CLK_ENABLE();
+  /*##-1- Enable GPIOB Clock (to be able to program the configuration registers) */
+  __HAL_RCC_GPIOB_CLK_ENABLE();
   
-  /*##-2- Configure PA05 IO in output push-pull mode to drive external LED ###*/  
-  GPIO_InitStruct.Pin = GPIO_PIN_5;
+  /*##-2- Configure PB12~15 IO in output push-pull mode to drive external LED ###*/
+  GPIO_InitStruct.Pin = GPIO_PIN_12;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   GPIO_InitStruct.Speed = GPIO_SPEED_FAST;
-  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct); 
-   
-  /*##-3- Toggle PA05 IO in an infinite loop #################################*/  
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+  GPIO_InitStruct.Pin = GPIO_PIN_13;
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+  GPIO_InitStruct.Pin = GPIO_PIN_14;
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+  GPIO_InitStruct.Pin = GPIO_PIN_15;
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+  /*##-3- Toggle PB12~15 IO in an infinite loop #################################*/
   while (1)
   {
-    HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
-    
-    /* Insert a 100ms delay */
-    HAL_Delay(100);
+    HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_14);
+    HAL_Delay(300);
+    HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_14);
+
+    HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_15);
+    HAL_Delay(200);
+    HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_15);
+
+    HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_12);
+    HAL_Delay(200);
+    HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_12);
+
+    HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_13);
+    HAL_Delay(300);
+    HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_13);
+
+    HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_12);
+    HAL_Delay(200);
+    HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_12);
+
+    HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_15);
+    HAL_Delay(200);
+    HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_15);
   }
 }
 
