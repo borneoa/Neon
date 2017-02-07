@@ -54,6 +54,7 @@ int __io_getchar(void);
 /* Private variables ---------------------------------------------------------*/
 static GPIO_InitTypeDef  GPIO_InitStruct;
 UART_HandleTypeDef UartHandle;
+I2C_HandleTypeDef I2cHandle;
 
 /* Private function prototypes -----------------------------------------------*/
 #ifdef __GNUC__
@@ -67,6 +68,38 @@ static void SystemClock_Config(void);
 static void Error_Handler(void);
 
 /* Private functions ---------------------------------------------------------*/
+
+static void i2cdetect(I2C_HandleTypeDef *h, const char *s, int addr_min, int addr_max)
+{
+  int a;
+
+  if (addr_min < 0x03)
+    addr_min = 0x03;
+  if (addr_max > 0x77)
+    addr_max = 0x77;
+
+  if (s)
+    printf("\r\ni2cdetect on bus %s", s);
+  printf("\r\n     0  1  2  3  4  5  6  7  8  9  a  b  c  d  e  f");
+  for (a = 0; a < 128; a++) {
+    if ((a & 0xf) == 0)
+      printf("\r\n%02x:", a);
+    if (a < addr_min || a > addr_max) {
+      printf("   ");
+      continue;
+    }
+    if (HAL_I2C_Master_Transmit(h, (uint16_t)(2*a), NULL, 0, 25)== HAL_OK) {
+      printf(" %02x", a);
+      continue;
+    }
+    if (HAL_I2C_GetError(h) == HAL_I2C_ERROR_AF) {
+      printf(" --");
+      continue;
+    }
+    printf(" ??");
+  }
+  printf("\r\n");
+}
 
 /**
   * @brief  Main program
@@ -113,6 +146,24 @@ int main(void)
     Error_Handler();
   }
 
+  /*##-1- Configure the I2C peripheral ######################################*/
+  I2cHandle.Instance             = I2Cx;
+
+  I2cHandle.Init.AddressingMode  = I2C_ADDRESSINGMODE_7BIT;
+  I2cHandle.Init.ClockSpeed      = 400000;
+  I2cHandle.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
+  I2cHandle.Init.DutyCycle       = I2C_DUTYCYCLE_16_9;
+  I2cHandle.Init.GeneralCallMode = I2C_GENERALCALL_DISABLE;
+  I2cHandle.Init.NoStretchMode   = I2C_NOSTRETCH_DISABLE;
+  I2cHandle.Init.OwnAddress1     = 0x3F;
+  I2cHandle.Init.OwnAddress2     = 0x3E;
+
+  if(HAL_I2C_Init(&I2cHandle) != HAL_OK)
+  {
+    /* Initialization Error */
+    Error_Handler();
+  }
+
   /*##-2- Configure PB12~15 IO in output push-pull mode to drive external LED ###*/
   GPIO_InitStruct.Pin = GPIO_PIN_12;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
@@ -135,6 +186,9 @@ int main(void)
   printf("Hello world !\r\n");
   printf("Press a key to continue ...\r\n");
   getchar();
+
+
+  i2cdetect(&I2cHandle, "I2C2", 0, 127);
 
   /*##-3- Toggle PB12~15 IO in an infinite loop #################################*/
   while (1)

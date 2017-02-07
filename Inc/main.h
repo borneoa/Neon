@@ -65,7 +65,32 @@
 #define USARTx_RX_GPIO_PORT              GPIOA
 #define USARTx_RX_AF                     GPIO_AF7_USART1
 
+/* User can use this section to tailor I2Cx/I2Cx instance used and associated
+   resources */
+/* Definition for I2Cx clock resources */
+#define I2Cx                             I2C2
+#define I2Cx_CLK_ENABLE()                __HAL_RCC_I2C2_CLK_ENABLE()
+#define I2Cx_SDA_GPIO_CLK_ENABLE()       __HAL_RCC_GPIOB_CLK_ENABLE()
+#define I2Cx_SCL_GPIO_CLK_ENABLE()       __HAL_RCC_GPIOB_CLK_ENABLE()
+
+#define I2Cx_FORCE_RESET()               __HAL_RCC_I2C2_FORCE_RESET()
+#define I2Cx_RELEASE_RESET()             __HAL_RCC_I2C2_RELEASE_RESET()
+
+/* Definition for I2Cx Pins */
+#define I2Cx_SCL_PIN                    GPIO_PIN_10
+#define I2Cx_SCL_GPIO_PORT              GPIOB
+#define I2Cx_SCL_AF                     GPIO_AF4_I2C2
+#define I2Cx_SDA_PIN                    GPIO_PIN_3
+#define I2Cx_SDA_GPIO_PORT              GPIOB
+#define I2Cx_SDA_AF                     GPIO_AF9_I2C2
+
+/* Size of Transmission buffer */
+#define TXBUFFERSIZE                      (COUNTOF(aTxBuffer) - 1)
+/* Size of Reception buffer */
+#define RXBUFFERSIZE                      TXBUFFERSIZE
+
 /* Exported macro ------------------------------------------------------------*/
+#define COUNTOF(__BUFFER__)   (sizeof(__BUFFER__) / sizeof(*(__BUFFER__)))
 /* Exported functions ------------------------------------------------------- */
 
 #endif /* __MAIN_H */
