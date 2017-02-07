@@ -131,30 +131,57 @@ void HAL_I2C_MspInit(I2C_HandleTypeDef *hi2c)
 {
   GPIO_InitTypeDef  GPIO_InitStruct;
 
-  /*##-1- Enable GPIO Clocks #################################################*/
-  /* Enable GPIO TX/RX clock */
-  I2Cx_SCL_GPIO_CLK_ENABLE();
-  I2Cx_SDA_GPIO_CLK_ENABLE();
+  if (hi2c->Instance == I2Cx) {
+    /*##-1- Enable GPIO Clocks #################################################*/
+    /* Enable GPIO TX/RX clock */
+    I2Cx_SCL_GPIO_CLK_ENABLE();
+    I2Cx_SDA_GPIO_CLK_ENABLE();
 
-  /*##-2- Configure peripheral GPIO ##########################################*/
-  /* I2C TX GPIO pin configuration  */
-  GPIO_InitStruct.Pin       = I2Cx_SCL_PIN;
-  GPIO_InitStruct.Mode      = GPIO_MODE_AF_OD;
-  GPIO_InitStruct.Pull      = GPIO_PULLUP;
-  GPIO_InitStruct.Speed     = GPIO_SPEED_FAST;
-  GPIO_InitStruct.Alternate = I2Cx_SCL_AF;
+    /*##-2- Configure peripheral GPIO ##########################################*/
+    /* I2C TX GPIO pin configuration  */
+    GPIO_InitStruct.Pin       = I2Cx_SCL_PIN;
+    GPIO_InitStruct.Mode      = GPIO_MODE_AF_OD;
+    GPIO_InitStruct.Pull      = GPIO_PULLUP;
+    GPIO_InitStruct.Speed     = GPIO_SPEED_FAST;
+    GPIO_InitStruct.Alternate = I2Cx_SCL_AF;
 
-  HAL_GPIO_Init(I2Cx_SCL_GPIO_PORT, &GPIO_InitStruct);
+    HAL_GPIO_Init(I2Cx_SCL_GPIO_PORT, &GPIO_InitStruct);
 
-  /* I2C RX GPIO pin configuration  */
-  GPIO_InitStruct.Pin = I2Cx_SDA_PIN;
-  GPIO_InitStruct.Alternate = I2Cx_SDA_AF;
+    /* I2C RX GPIO pin configuration  */
+    GPIO_InitStruct.Pin = I2Cx_SDA_PIN;
+    GPIO_InitStruct.Alternate = I2Cx_SDA_AF;
 
-  HAL_GPIO_Init(I2Cx_SDA_GPIO_PORT, &GPIO_InitStruct);
+    HAL_GPIO_Init(I2Cx_SDA_GPIO_PORT, &GPIO_InitStruct);
 
-  /*##-3- Enable I2C peripheral Clock ########################################*/
-  /* Enable I2C1 clock */
-  I2Cx_CLK_ENABLE();
+    /*##-3- Enable I2C peripheral Clock ########################################*/
+    /* Enable I2C1 clock */
+    I2Cx_CLK_ENABLE();
+  } else {
+    /*##-1- Enable GPIO Clocks #################################################*/
+    /* Enable GPIO TX/RX clock */
+    I2Cy_SCL_GPIO_CLK_ENABLE();
+    I2Cy_SDA_GPIO_CLK_ENABLE();
+
+    /*##-2- Configure peripheral GPIO ##########################################*/
+    /* I2C TX GPIO pin configuration  */
+    GPIO_InitStruct.Pin       = I2Cy_SCL_PIN;
+    GPIO_InitStruct.Mode      = GPIO_MODE_AF_OD;
+    GPIO_InitStruct.Pull      = GPIO_PULLUP;
+    GPIO_InitStruct.Speed     = GPIO_SPEED_FAST;
+    GPIO_InitStruct.Alternate = I2Cy_SCL_AF;
+
+    HAL_GPIO_Init(I2Cy_SCL_GPIO_PORT, &GPIO_InitStruct);
+
+    /* I2C RX GPIO pin configuration  */
+    GPIO_InitStruct.Pin = I2Cy_SDA_PIN;
+    GPIO_InitStruct.Alternate = I2Cy_SDA_AF;
+
+    HAL_GPIO_Init(I2Cy_SDA_GPIO_PORT, &GPIO_InitStruct);
+
+    /*##-3- Enable I2C peripheral Clock ########################################*/
+    /* Enable I2C1 clock */
+    I2Cy_CLK_ENABLE();
+  }
 }
 
 /**
@@ -167,15 +194,27 @@ void HAL_I2C_MspInit(I2C_HandleTypeDef *hi2c)
   */
 void HAL_I2C_MspDeInit(I2C_HandleTypeDef *hi2c)
 {
-  /*##-1- Reset peripherals ##################################################*/
-  I2Cx_FORCE_RESET();
-  I2Cx_RELEASE_RESET();
+  if (hi2c->Instance == I2Cx) {
+    /*##-1- Reset peripherals ##################################################*/
+    I2Cx_FORCE_RESET();
+    I2Cx_RELEASE_RESET();
 
-  /*##-2- Disable peripherals and GPIO Clocks ################################*/
-  /* Configure I2C Tx as alternate function  */
-  HAL_GPIO_DeInit(I2Cx_SCL_GPIO_PORT, I2Cx_SCL_PIN);
-  /* Configure I2C Rx as alternate function  */
-  HAL_GPIO_DeInit(I2Cx_SDA_GPIO_PORT, I2Cx_SDA_PIN);
+    /*##-2- Disable peripherals and GPIO Clocks ################################*/
+    /* Configure I2C Tx as alternate function  */
+    HAL_GPIO_DeInit(I2Cx_SCL_GPIO_PORT, I2Cx_SCL_PIN);
+    /* Configure I2C Rx as alternate function  */
+    HAL_GPIO_DeInit(I2Cx_SDA_GPIO_PORT, I2Cx_SDA_PIN);
+  } else {
+    /*##-1- Reset peripherals ##################################################*/
+    I2Cy_FORCE_RESET();
+    I2Cy_RELEASE_RESET();
+
+    /*##-2- Disable peripherals and GPIO Clocks ################################*/
+    /* Configure I2C Tx as alternate function  */
+    HAL_GPIO_DeInit(I2Cy_SCL_GPIO_PORT, I2Cy_SCL_PIN);
+    /* Configure I2C Rx as alternate function  */
+    HAL_GPIO_DeInit(I2Cy_SDA_GPIO_PORT, I2Cy_SDA_PIN);
+  }
 }
 
 /**

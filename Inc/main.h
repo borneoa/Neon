@@ -84,6 +84,23 @@
 #define I2Cx_SDA_GPIO_PORT              GPIOB
 #define I2Cx_SDA_AF                     GPIO_AF9_I2C2
 
+/* Definition for I2Cy clock resources */
+#define I2Cy                             I2C3
+#define I2Cy_CLK_ENABLE()                __HAL_RCC_I2C3_CLK_ENABLE()
+#define I2Cy_SDA_GPIO_CLK_ENABLE()       __HAL_RCC_GPIOB_CLK_ENABLE()
+#define I2Cy_SCL_GPIO_CLK_ENABLE()       __HAL_RCC_GPIOA_CLK_ENABLE()
+
+#define I2Cy_FORCE_RESET()               __HAL_RCC_I2C3_FORCE_RESET()
+#define I2Cy_RELEASE_RESET()             __HAL_RCC_I2C3_RELEASE_RESET()
+
+/* Definition for I2Cy Pins */
+#define I2Cy_SCL_PIN                    GPIO_PIN_8
+#define I2Cy_SCL_GPIO_PORT              GPIOA
+#define I2Cy_SCL_AF                     GPIO_AF4_I2C3
+#define I2Cy_SDA_PIN                    GPIO_PIN_4
+#define I2Cy_SDA_GPIO_PORT              GPIOB
+#define I2Cy_SDA_AF                     GPIO_AF9_I2C3
+
 /* Size of Transmission buffer */
 #define TXBUFFERSIZE                      (COUNTOF(aTxBuffer) - 1)
 /* Size of Reception buffer */

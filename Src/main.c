@@ -54,7 +54,7 @@ int __io_getchar(void);
 /* Private variables ---------------------------------------------------------*/
 static GPIO_InitTypeDef  GPIO_InitStruct;
 UART_HandleTypeDef UartHandle;
-I2C_HandleTypeDef I2cHandle;
+I2C_HandleTypeDef I2cxHandle, I2cyHandle;
 
 /* Private function prototypes -----------------------------------------------*/
 #ifdef __GNUC__
@@ -147,18 +147,35 @@ int main(void)
   }
 
   /*##-1- Configure the I2C peripheral ######################################*/
-  I2cHandle.Instance             = I2Cx;
+  I2cxHandle.Instance             = I2Cx;
 
-  I2cHandle.Init.AddressingMode  = I2C_ADDRESSINGMODE_7BIT;
-  I2cHandle.Init.ClockSpeed      = 400000;
-  I2cHandle.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
-  I2cHandle.Init.DutyCycle       = I2C_DUTYCYCLE_16_9;
-  I2cHandle.Init.GeneralCallMode = I2C_GENERALCALL_DISABLE;
-  I2cHandle.Init.NoStretchMode   = I2C_NOSTRETCH_DISABLE;
-  I2cHandle.Init.OwnAddress1     = 0x3F;
-  I2cHandle.Init.OwnAddress2     = 0x3E;
+  I2cxHandle.Init.AddressingMode  = I2C_ADDRESSINGMODE_7BIT;
+  I2cxHandle.Init.ClockSpeed      = 400000;
+  I2cxHandle.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
+  I2cxHandle.Init.DutyCycle       = I2C_DUTYCYCLE_16_9;
+  I2cxHandle.Init.GeneralCallMode = I2C_GENERALCALL_DISABLE;
+  I2cxHandle.Init.NoStretchMode   = I2C_NOSTRETCH_DISABLE;
+  I2cxHandle.Init.OwnAddress1     = 0x3F;
+  I2cxHandle.Init.OwnAddress2     = 0x3E;
 
-  if(HAL_I2C_Init(&I2cHandle) != HAL_OK)
+  if(HAL_I2C_Init(&I2cxHandle) != HAL_OK)
+  {
+    /* Initialization Error */
+    Error_Handler();
+  }
+
+  I2cyHandle.Instance             = I2Cy;
+
+  I2cyHandle.Init.AddressingMode  = I2C_ADDRESSINGMODE_7BIT;
+  I2cyHandle.Init.ClockSpeed      = 400000;
+  I2cyHandle.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
+  I2cyHandle.Init.DutyCycle       = I2C_DUTYCYCLE_16_9;
+  I2cyHandle.Init.GeneralCallMode = I2C_GENERALCALL_DISABLE;
+  I2cyHandle.Init.NoStretchMode   = I2C_NOSTRETCH_DISABLE;
+  I2cyHandle.Init.OwnAddress1     = 0x3F;
+  I2cyHandle.Init.OwnAddress2     = 0x3E;
+
+  if(HAL_I2C_Init(&I2cyHandle) != HAL_OK)
   {
     /* Initialization Error */
     Error_Handler();
@@ -188,7 +205,8 @@ int main(void)
   getchar();
 
 
-  i2cdetect(&I2cHandle, "I2C2", 0, 127);
+  i2cdetect(&I2cxHandle, "I2C2", 0, 127);
+  i2cdetect(&I2cyHandle, "I2C3", 0, 127);
 
   /*##-3- Toggle PB12~15 IO in an infinite loop #################################*/
   while (1)
