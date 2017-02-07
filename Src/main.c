@@ -201,9 +201,6 @@ int main(void)
   setvbuf(stdin, NULL, _IONBF, 0);
 
   printf("Hello world !\r\n");
-  printf("Press a key to continue ...\r\n");
-  getchar();
-
 
   i2cdetect(&I2cxHandle, "I2C2", 0, 127);
   i2cdetect(&I2cyHandle, "I2C3", 0, 127);
