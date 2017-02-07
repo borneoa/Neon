@@ -66,7 +66,7 @@ INCDIRS = \
 # Source files (path relative to SRC_ROOT)
 #
 
-SRC_C = main.c stm32f4xx_it.c system_stm32f4xx.c
+SRC_C = main.c stm32f4xx_hal_msp.c stm32f4xx_it.c system_stm32f4xx.c
 
 #
 # Library files (path relative to LIB_ROOT)

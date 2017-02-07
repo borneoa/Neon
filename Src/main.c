@@ -47,13 +47,22 @@
   * @{
   */ 
 
+int __io_getchar(void);
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
 static GPIO_InitTypeDef  GPIO_InitStruct;
+UART_HandleTypeDef UartHandle;
 
 /* Private function prototypes -----------------------------------------------*/
+#ifdef __GNUC__
+  /* With GCC/RAISONANCE, small printf (option LD Linker->Libraries->Small printf
+     set to 'Yes') calls __io_putchar() */
+  #define PUTCHAR_PROTOTYPE int __io_putchar(int ch)
+#else
+  #define PUTCHAR_PROTOTYPE int fputc(int ch, FILE *f)
+#endif /* __GNUC__ */
 static void SystemClock_Config(void);
 static void Error_Handler(void);
 
@@ -80,6 +89,30 @@ int main(void)
   /*##-1- Enable GPIOB Clock (to be able to program the configuration registers) */
   __HAL_RCC_GPIOB_CLK_ENABLE();
   
+  /*##-1- Configure the UART peripheral ######################################*/
+  /* Put the USART peripheral in the Asynchronous mode (UART Mode) */
+  /* UART1 configured as follow:
+      - Word Length = 8 Bits
+      - Stop Bit = One Stop bit
+      - Parity = NO parity
+      - BaudRate = 115200 baud
+      - Hardware flow control disabled (RTS and CTS signals) */
+  UartHandle.Instance          = USARTx;
+
+  UartHandle.Init.BaudRate     = 115200;
+  UartHandle.Init.WordLength   = UART_WORDLENGTH_8B;
+  UartHandle.Init.StopBits     = UART_STOPBITS_1;
+  UartHandle.Init.Parity       = UART_PARITY_NONE;
+  UartHandle.Init.HwFlowCtl    = UART_HWCONTROL_NONE;
+  UartHandle.Init.Mode         = UART_MODE_TX_RX;
+  UartHandle.Init.OverSampling = UART_OVERSAMPLING_16;
+
+  if(HAL_UART_Init(&UartHandle) != HAL_OK)
+  {
+    /* Initialization Error */
+    Error_Handler();
+  }
+
   /*##-2- Configure PB12~15 IO in output push-pull mode to drive external LED ###*/
   GPIO_InitStruct.Pin = GPIO_PIN_12;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
@@ -95,6 +128,13 @@ int main(void)
 
   GPIO_InitStruct.Pin = GPIO_PIN_15;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+  /* stdin unbuffered otherwise will hang trying to fill the input buffer */
+  setvbuf(stdin, NULL, _IONBF, 0);
+
+  printf("Hello world !\r\n");
+  printf("Press a key to continue ...\r\n");
+  getchar();
 
   /*##-3- Toggle PB12~15 IO in an infinite loop #################################*/
   while (1)
@@ -123,6 +163,37 @@ int main(void)
     HAL_Delay(200);
     HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_15);
   }
+}
+
+
+/**
+  * @brief  Retargets the C library printf function to the USART.
+  * @param  None
+  * @retval None
+  */
+PUTCHAR_PROTOTYPE
+{
+  /* Place your implementation of fputc here */
+  /* e.g. write a character to the EVAL_COM1 and Loop until the end of transmission */
+  HAL_UART_Transmit(&UartHandle, (uint8_t *)&ch, 1, HAL_MAX_DELAY);
+
+  return ch;
+}
+
+/**
+ * @brief  Retargets the C library scanf function to the USART (GNU)
+ * @param  None
+ * @retval None
+ */
+int __io_getchar(void)
+{
+  /* Place your implementation of fgetc here */
+  /* e.g. read a character from the USART */
+  uint8_t ch;
+
+  HAL_UART_Receive(&UartHandle, &ch, 1, HAL_MAX_DELAY);
+
+  return ch;
 }
 
 /**
