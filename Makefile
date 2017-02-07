@@ -93,6 +93,7 @@ LIB_C = \
 	Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cortex.c		\
 	Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_gpio.c		\
 	Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc.c		\
+	Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_uart.c		\
 	Drivers/BSP/STM32F4xx-Nucleo/stm32f4xx_nucleo.c
 
 
