@@ -110,6 +110,17 @@ void test_device()
   printf("\n%d %02x %02x %02x\n", (int)ret, b[0], b[1], b[2]);
 }
 
+void measure()
+{
+  uint8_t b[6];
+  HAL_StatusTypeDef ret;
+
+  ret = HAL_I2C_Mem_Read(&I2cxHandle, 2 * 0x70, 0x7ca2, I2C_MEMADD_SIZE_16BIT, b, 6, 1000);
+  printf("\n%d %02x %02x %02x %02x %02x %02x\n", (int)ret, b[0], b[1], b[2], b[3], b[4], b[5]);
+  printf("%%RH = %.2f%%\n", (100.0 * (b[3] * 256 + b[4])) / 65536.0);
+  printf("T = %.2f C\n", ((175.0 * (b[0] * 256 + b[1])) / 65536.0) - 45.0);
+}
+
 /**
   * @brief  Main program
   * @param  None
@@ -215,6 +226,7 @@ int main(void)
   i2cdetect(&I2cyHandle, "I2C3", 0, 127);
 
   test_device();
+  measure();
 
   /*##-3- Toggle PB12~15 IO in an infinite loop #################################*/
   while (1)
