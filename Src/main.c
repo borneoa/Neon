@@ -101,6 +101,15 @@ static void i2cdetect(I2C_HandleTypeDef *h, const char *s, int addr_min, int add
   printf("\r\n");
 }
 
+void test_device()
+{
+  uint8_t b[3];
+  HAL_StatusTypeDef ret;
+
+  ret = HAL_I2C_Mem_Read(&I2cxHandle, 2 * 0x70, 0xefc8, I2C_MEMADD_SIZE_16BIT, b, 3, 1000);
+  printf("\n%d %02x %02x %02x\n", (int)ret, b[0], b[1], b[2]);
+}
+
 /**
   * @brief  Main program
   * @param  None
@@ -204,6 +213,8 @@ int main(void)
 
   i2cdetect(&I2cxHandle, "I2C2", 0, 127);
   i2cdetect(&I2cyHandle, "I2C3", 0, 127);
+
+  test_device();
 
   /*##-3- Toggle PB12~15 IO in an infinite loop #################################*/
   while (1)
