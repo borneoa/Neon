@@ -94,6 +94,8 @@ LIB_C = \
 	Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_gpio.c		\
 	Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2c.c		\
 	Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2c_ex.c		\
+	Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2s.c		\
+	Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2s_ex.c		\
 	Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc.c		\
 	Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_uart.c		\
 	Drivers/BSP/STM32F4xx-Nucleo/stm32f4xx_nucleo.c
