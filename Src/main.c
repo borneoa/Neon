@@ -55,6 +55,7 @@ int __io_getchar(void);
 static GPIO_InitTypeDef  GPIO_InitStruct;
 UART_HandleTypeDef UartHandle;
 I2C_HandleTypeDef I2cxHandle, I2cyHandle;
+I2S_HandleTypeDef hi2s;
 
 /* Private function prototypes -----------------------------------------------*/
 #ifdef __GNUC__
@@ -128,6 +129,9 @@ void measure()
   */
 int main(void)
 {
+  uint16_t buf[64];
+  int ret;
+
   /* STM32F4xx HAL library initialization:
        - Configure the Flash prefetch, instruction and Data caches
        - Configure the Systick to generate an interrupt each 1 msec
@@ -201,6 +205,18 @@ int main(void)
     Error_Handler();
   }
 
+  /*##-1.1- Configure I2S ###*/
+  hi2s.Instance = SPI2;
+  hi2s.Init.Mode = I2S_MODE_MASTER_RX;
+  hi2s.Init.Standard = I2S_STANDARD_PHILLIPS;
+  hi2s.Init.DataFormat = I2S_DATAFORMAT_16B;
+  hi2s.Init.MCLKOutput = I2S_MCLKOUTPUT_ENABLE;
+  hi2s.Init.AudioFreq = I2S_AUDIOFREQ_44K;
+  hi2s.Init.CPOL = I2S_CPOL_LOW;
+  hi2s.Init.ClockSource = I2S_CLOCK_PLL;
+  hi2s.Init.FullDuplexMode = I2S_FULLDUPLEXMODE_DISABLE;
+  HAL_I2S_Init(&hi2s);
+
   /*##-2- Configure PB12~15 IO in output push-pull mode to drive external LED ###*/
   GPIO_InitStruct.Pin = GPIO_PIN_12;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
@@ -227,6 +243,13 @@ int main(void)
 
   test_device();
   measure();
+
+  memset(buf, 0, sizeof(buf));
+  ret = HAL_I2S_Receive(&hi2s, (uint16_t *)buf, 64, 1000);
+  printf("Ret = %d\r\n", ret);
+  for (ret=0; ret < 64; ret++)
+    printf(" %04x", buf[ret]);
+  printf("\r\n");
 
   /*##-3- Toggle PB12~15 IO in an infinite loop #################################*/
   while (1)
@@ -312,6 +335,7 @@ static void SystemClock_Config(void)
 {
   RCC_ClkInitTypeDef RCC_ClkInitStruct;
   RCC_OscInitTypeDef RCC_OscInitStruct;
+  RCC_PeriphCLKInitTypeDef PeriphClkInitStruct;
 
   /* Enable Power Control clock */
   __HAL_RCC_PWR_CLK_ENABLE();
@@ -344,6 +368,16 @@ static void SystemClock_Config(void)
   RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV2;  
   RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;  
   if(HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_3) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  /* Select PLLI2S output */
+  PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_I2S;
+  PeriphClkInitStruct.PLLI2S.PLLI2SM = 8;
+  PeriphClkInitStruct.PLLI2S.PLLI2SN = 192;
+  PeriphClkInitStruct.PLLI2S.PLLI2SR = 4;
+  if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInitStruct)  != HAL_OK)
   {
     Error_Handler();
   }

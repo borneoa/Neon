@@ -117,6 +117,25 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef *huart)
 
 }
 
+void HAL_I2S_MspInit(I2S_HandleTypeDef* hi2s)
+{
+	GPIO_InitTypeDef GPIO_InitStruct;
+	if (hi2s->Instance == SPI2) {
+		__HAL_RCC_GPIOA_CLK_ENABLE();
+		/**I2S2 GPIO Configuration
+		   PA2     ------> I2S2_CKIN
+		   PA3     ------> I2S2_MCK
+		 */
+		GPIO_InitStruct.Pin = GPIO_PIN_2 | GPIO_PIN_3;
+		GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+		GPIO_InitStruct.Pull = GPIO_NOPULL;
+		GPIO_InitStruct.Speed = GPIO_SPEED_LOW;
+		GPIO_InitStruct.Alternate = GPIO_AF5_SPI2;
+		HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+		__HAL_RCC_SPI2_CLK_ENABLE();
+	}
+}
+
 /**
   * @brief I2C MSP Initialization
   *        This function configures the hardware resources used in this example:

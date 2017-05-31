@@ -43,6 +43,7 @@
 #include "stm32f4xx_hal.h"
 #include "stm32f4xx_nucleo.h"
 #include "stdio.h"
+#include "string.h"
 
 /* Exported types ------------------------------------------------------------*/
 /* Exported constants --------------------------------------------------------*/
